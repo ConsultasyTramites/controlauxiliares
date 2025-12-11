@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Formulario de Auxiliares</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+    .form-container {
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      background-color: #f9f9f9;
+    }
+    select, button {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h2>Formulario de Auxiliares</h2>
+    <form id="auxiliaryForm">
+      <label for="auxiliary">Selecciona el tipo de auxilio:</label>
+      <select id="auxiliary" required>
+        <option value="Baño">Baño</option>
+        <option value="Capacitación">Capacitación</option>
+        <option value="Retorno de Baño">Retorno de Baño</option>
+        <option value="Almuerzo">Almuerzo</option>
+        <option value="Retorno de Almuerzo">Retorno de Almuerzo</option>
+        <option value="Permiso">Permiso</option>
+      </select>
+
+      <label for="advisor">Selecciona el asesor:</label>
+      <select id="advisor" required>
+        <option value="Juan">Juan</option>
+        <option value="Pedro">Pedro</option>
+        <option value="Luis">Luis</option>
+        <option value="Martin">Martin</option>
+        <option value="Carlos">Carlos</option>
+        <option value="Maria">Maria</option>
+        <option value="Juana">Juana</option>
+      </select>
+
+      <label for="channel">Selecciona el canal:</label>
+      <select id="channel" required>
+        <option value="CCVox">CCVox</option>
+        <option value="PChat">PChat</option>
+        <option value="Correo">Correo</option>
+      </select>
+
+      <button type="button" onclick="submitForm()">Enviar</button>
+    </form>
+  </div>
+
+  <script src="https://apis.google.com/js/platform.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    function submitForm() {
+      const auxiliary = document.getElementById('auxiliary').value;
+      const advisor = document.getElementById('advisor').value;
+      const channel = document.getElementById('channel').value;
+      const timestamp = new Date().toLocaleString(); // Obtener la hora del envío
+
+      const formData = {
+        auxiliary: auxiliary,
+        advisor: advisor,
+        channel: channel,
+        timestamp: timestamp
+      };
+
+      // Llamada a la función para guardar en Google Sheets
+      saveToGoogleSheet(formData);
+    }
+
+    function saveToGoogleSheet(formData) {
+      const scriptURL = 'https://script.google.com/macros/s/https://script.google.com/macros/s/AKfycby_PgTz4xcHIzEOPf7qU0Z2y0FB5gt33qWZvmA35kh8v7xWVXRZDGfIAdgNnlB0h8lM/exec/exec'; // Sustituye con tu URL del Google Apps Script
+
+      $.post(scriptURL, formData, function(response) {
+        alert('Formulario enviado correctamente');
+      }).fail(function() {
+        alert('Hubo un error al enviar el formulario');
+      });
+    }
+  </script>
+</body>
+</html>
