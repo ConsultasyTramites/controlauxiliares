@@ -7,14 +7,20 @@
   <style>
     body {
       font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
     }
     .form-container {
       max-width: 500px;
-      margin: 0 auto;
+      margin: 50px auto;
       padding: 20px;
       border: 1px solid #ccc;
       border-radius: 10px;
-      background-color: #f9f9f9;
+      background-color: #fff;
+    }
+    h2 {
+      text-align: center;
     }
     select, button {
       width: 100%;
@@ -22,6 +28,37 @@
       margin: 10px 0;
       border-radius: 5px;
       border: 1px solid #ccc;
+      font-size: 16px;
+    }
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    button:active {
+      background-color: #004085;
+    }
+    .message {
+      text-align: center;
+      color: green;
+      font-size: 16px;
+      display: none;
+    }
+    .clock {
+      font-size: 50px;
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: black;
+      color: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
     }
   </style>
 </head>
@@ -58,12 +95,17 @@
       </select>
 
       <button type="button" onclick="submitForm()">Enviar</button>
+
+      <div class="message" id="message">Registro guardado correctamente.</div>
     </form>
   </div>
+
+  <div class="clock" id="clock"></div>
 
   <script src="https://apis.google.com/js/platform.js"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
+    // Función para enviar los datos del formulario
     function submitForm() {
       const auxiliary = document.getElementById('auxiliary').value;
       const advisor = document.getElementById('advisor').value;
@@ -81,15 +123,36 @@
       saveToGoogleSheet(formData);
     }
 
+    // Función para guardar los datos en Google Sheets
     function saveToGoogleSheet(formData) {
-      const scriptURL = 'https://script.google.com/macros/s/https://script.google.com/macros/s/AKfycby_PgTz4xcHIzEOPf7qU0Z2y0FB5gt33qWZvmA35kh8v7xWVXRZDGfIAdgNnlB0h8lM/exec/exec'; // Sustituye con tu URL del Google Apps Script
+      const scriptURL = 'https://script.google.com/macros/s/AKfycby_PgTz4xcHIzEOPf7qU0Z2y0FB5gt33qWZvmA35kh8v7xWVXRZDGfIAdgNnlB0h8lM/exec'; // URL de tu Google Apps Script
 
       $.post(scriptURL, formData, function(response) {
-        alert('Formulario enviado correctamente');
-      }).fail(function() {
-        alert('Hubo un error al enviar el formulario');
+        // Mostrar mensaje de éxito después de enviar el formulario
+        document.getElementById('message').style.display = 'block';
+        setTimeout(function() {
+          document.getElementById('message').style.display = 'none';
+        }, 5000); // El mensaje desaparecerá después de 5 segundos
+      }).fail(function(jqXHR, textStatus, errorThrown) {
+        console.error("Error:", textStatus, errorThrown);  // Mostrar más detalles en la consola
+        alert('Hubo un error al enviar el formulario. Revisa la consola para detalles.');
       });
     }
+
+    // Función para actualizar el reloj
+    function updateClock() {
+      const now = new Date();
+      const hours = now.getHours().toString().padStart(2, '0');
+      const minutes = now.getMinutes().toString().padStart(2, '0');
+      const seconds = now.getSeconds().toString().padStart(2, '0');
+      const timeString = `${hours}:${minutes}:${seconds}`;
+      
+      document.getElementById('clock').textContent = timeString;
+    }
+
+    // Actualizar el reloj cada segundo
+    setInterval(updateClock, 1000);
+    updateClock(); // Inicializa el reloj al cargar la página
   </script>
 </body>
 </html>
