@@ -5,64 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Formulario de Auxiliares</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #f4f4f4;
-    }
-    .form-container {
-      max-width: 500px;
-      margin: 50px auto;
-      padding: 20px;
-      border: 1px solid #ccc;
-      border-radius: 10px;
-      background-color: #fff;
-    }
-    h2 {
-      text-align: center;
-    }
-    select, button {
-      width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-      font-size: 16px;
-    }
-    button {
-      background-color: #007bff;
-      color: white;
-      border: none;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-    button:hover {
-      background-color: #0056b3;
-    }
-    button:active {
-      background-color: #004085;
-    }
-    .message {
-      text-align: center;
-      color: green;
-      font-size: 16px;
-      display: none;
-    }
-    .clock {
-      font-size: 50px;
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background-color: black;
-      color: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-    }
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4; }
+    .form-container { max-width: 500px; margin: 50px auto; padding: 20px; border: 1px solid #ccc; border-radius: 10px; background-color: #fff; }
+    h2 { text-align: center; }
+    select, button { width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid #ccc; font-size: 16px; }
+    button { background-color: #007bff; color: white; border: none; cursor: pointer; transition: background-color 0.3s ease; }
+    button:hover { background-color: #0056b3; }
+    button:active { background-color: #004085; }
+    .message { text-align: center; color: green; font-size: 16px; display: none; margin-top: 10px; font-weight: bold; }
+    .error-message { text-align: center; color: red; font-size: 16px; display: none; margin-top: 10px; }
+    .clock { font-size: 50px; position: fixed; top: 20px; right: 20px; background-color: black; color: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); }
+    /* Estilo para deshabilitar botón mientras carga */
+    button:disabled { background-color: #ccc; cursor: not-allowed; }
   </style>
 </head>
 <body>
+
   <div class="form-container">
     <h2>Formulario de Auxiliares</h2>
     <form id="auxiliaryForm">
@@ -94,65 +52,83 @@
         <option value="Correo">Correo</option>
       </select>
 
-      <button type="button" onclick="submitForm()">Enviar</button>
+      <button type="button" id="submitBtn" onclick="submitForm()">Enviar</button>
 
       <div class="message" id="message">Registro guardado correctamente.</div>
+      <div class="error-message" id="errorMessage">Error al guardar.</div>
     </form>
   </div>
 
   <div class="clock" id="clock"></div>
 
-  <script src="https://apis.google.com/js/platform.js"></script>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
-    // Función para enviar los datos del formulario
-    function submitForm() {
-      const auxiliary = document.getElementById('auxiliary').value;
-      const advisor = document.getElementById('advisor').value;
-      const channel = document.getElementById('channel').value;
-      const timestamp = new Date().toLocaleString(); // Obtener la hora del envío
+    // URL DE TU APP SCRIPT (¡Asegúrate que sea la de la NUEVA implementación!)
+    const scriptURL = 'https://script.google.com/macros/s/AKfycby_PgTz4xcHIzEOPf7qU0Z2y0FB5gt33qWZvmA35kh8v7xWVXRZDGfIAdgNnlB0h8lM/exec';
 
+    function submitForm() {
+      // 1. Obtener elementos y bloquear botón para evitar doble clic
+      const btn = document.getElementById('submitBtn');
+      const msgSuccess = document.getElementById('message');
+      const msgError = document.getElementById('errorMessage');
+      
+      btn.disabled = true;
+      btn.textContent = "Enviando...";
+      msgSuccess.style.display = 'none';
+      msgError.style.display = 'none';
+
+      // 2. Preparar datos
       const formData = {
-        auxiliary: auxiliary,
-        advisor: advisor,
-        channel: channel,
-        timestamp: timestamp
+        auxiliary: document.getElementById('auxiliary').value,
+        advisor: document.getElementById('advisor').value,
+        channel: document.getElementById('channel').value,
+        timestamp: new Date().toLocaleString()
       };
 
-      // Llamada a la función para guardar en Google Sheets
-      saveToGoogleSheet(formData);
-    }
-
-    // Función para guardar los datos en Google Sheets
-    function saveToGoogleSheet(formData) {
-      const scriptURL = 'https://script.google.com/macros/s/AKfycby_PgTz4xcHIzEOPf7qU0Z2y0FB5gt33qWZvmA35kh8v7xWVXRZDGfIAdgNnlB0h8lM/exec'; // URL de tu Google Apps Script
-
-      $.post(scriptURL, formData, function(response) {
-        // Mostrar mensaje de éxito después de enviar el formulario
-        document.getElementById('message').style.display = 'block';
-        setTimeout(function() {
-          document.getElementById('message').style.display = 'none';
-        }, 5000); // El mensaje desaparecerá después de 5 segundos
-      }).fail(function(jqXHR, textStatus, errorThrown) {
-        console.error("Error:", textStatus, errorThrown);  // Mostrar más detalles en la consola
-        alert('Hubo un error al enviar el formulario. Revisa la consola para detalles.');
+      // 3. Enviar usando FETCH (Más moderno y seguro que jQuery)
+      fetch(scriptURL, {
+        method: 'POST',
+        // IMPORTANTE: Enviar como string y usar text/plain para evitar bloqueo CORS
+        body: JSON.stringify(formData),
+        headers: {
+            "Content-Type": "text/plain;charset=utf-8",
+        },
+      })
+      .then((response) => {
+          if (response.ok) {
+              // Registro exitoso
+              msgSuccess.style.display = 'block';
+              // Reiniciar formulario (opcional)
+              // document.getElementById('auxiliaryForm').reset(); 
+          } else {
+              throw new Error('Error en la respuesta del servidor');
+          }
+      })
+      .catch((error) => {
+        console.error('Error!', error);
+        msgError.style.display = 'block';
+        msgError.innerText = "Error: " + error.message;
+      })
+      .finally(() => {
+        // Restaurar el botón
+        btn.disabled = false;
+        btn.textContent = "Enviar";
+        
+        // Ocultar mensaje de éxito tras 5 segundos
+        if(msgSuccess.style.display === 'block'){
+            setTimeout(() => { msgSuccess.style.display = 'none'; }, 5000);
+        }
       });
     }
 
-    // Función para actualizar el reloj
+    // Función del reloj
     function updateClock() {
       const now = new Date();
-      const hours = now.getHours().toString().padStart(2, '0');
-      const minutes = now.getMinutes().toString().padStart(2, '0');
-      const seconds = now.getSeconds().toString().padStart(2, '0');
-      const timeString = `${hours}:${minutes}:${seconds}`;
-      
+      const timeString = now.toLocaleTimeString('es-ES', { hour12: false });
       document.getElementById('clock').textContent = timeString;
     }
 
-    // Actualizar el reloj cada segundo
     setInterval(updateClock, 1000);
-    updateClock(); // Inicializa el reloj al cargar la página
+    updateClock(); 
   </script>
 </body>
 </html>
