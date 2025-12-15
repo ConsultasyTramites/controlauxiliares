@@ -1,93 +1,264 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Formulario de Auxiliares</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4; }
-    .form-container { max-width: 500px; margin: 50px auto; padding: 20px; border: 1px solid #ccc; border-radius: 10px; background-color: #fff; }
-    h2 { text-align: center; }
-    select, button { width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid #ccc; font-size: 16px; }
-    button { background-color: #007bff; color: white; border: none; cursor: pointer; transition: background-color 0.3s ease; }
-    button:hover { background-color: #0056b3; }
-    button:active { background-color: #004085; }
-    .message { text-align: center; color: green; font-size: 16px; display: none; margin-top: 10px; font-weight: bold; }
-    .error-message { text-align: center; color: red; font-size: 16px; display: none; margin-top: 10px; }
-    .clock { font-size: 50px; position: fixed; top: 20px; right: 20px; background-color: black; color: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); }
-    /* Estilo para deshabilitar botón mientras carga */
-    button:disabled { background-color: #ccc; cursor: not-allowed; }
+    :root{
+      --bg1:#162456;
+      --bg2:#0a0f23;
+      --card: rgba(9, 14, 32, 0.82);
+      --border: rgba(255,255,255,0.18);
+      --text: #F2F5FF;
+      --text2:#E7ECFF;
+      --btn:#3B82F6;
+      --btnH:#2563EB;
+      --btnA:#1D4ED8;
+    }
+
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family: Arial, sans-serif;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(59,130,246,0.35) 0%, rgba(22,36,86,0.95) 55%, rgba(10,15,35,1) 100%);
+      color: var(--text);
+    }
+
+    /* Layout: izquierda formulario, centro reloj, derecha imagen */
+    .page{
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      padding: 24px;
+      box-sizing: border-box;
+    }
+
+    .left{
+      flex: 0 0 420px;
+      max-width: 420px;
+      width: 100%;
+    }
+
+    .center{
+      flex: 1 1 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .right{
+      flex: 0 0 420px;
+      max-width: 420px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .right img{
+      width: 100%;
+      height: auto;
+      max-height: 80vh;
+      object-fit: contain;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+    }
+
+    /* Tarjeta formulario */
+    .form-container{
+      width: 100%;
+      padding: 18px;
+      border-radius: 12px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      backdrop-filter: blur(6px);
+    }
+
+    h2{
+      margin: 0 0 12px 0;
+      text-align:center;
+      color:#fff;
+    }
+
+    label{
+      color: var(--text2);
+      font-weight: 600;
+    }
+
+    select, button{
+      width:100%;
+      padding:10px;
+      margin:10px 0;
+      border-radius: 6px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+
+    select{
+      background: rgba(255,255,255,0.10);
+      color:#fff;
+      border: 1px solid rgba(255,255,255,0.25);
+    }
+    select option{ color:#111; }
+
+    button{
+      background: var(--btn);
+      color:#fff;
+      border:none;
+      cursor:pointer;
+      transition: background-color .2s ease;
+    }
+    button:hover{ background: var(--btnH); }
+    button:active{ background: var(--btnA); }
+    button:disabled{ background:#94A3B8; cursor:not-allowed; }
+
+    .message{
+      text-align:center;
+      color:#7CFFB2;
+      font-size:16px;
+      display:none;
+      margin-top:10px;
+      font-weight:bold;
+    }
+    .error-message{
+      text-align:center;
+      color:#FF6B6B;
+      font-size:16px;
+      display:none;
+      margin-top:10px;
+    }
+
+    /* ===== RELOJ DIGITAL GRANDE (MISMO LUGAR: CENTRO) ===== */
+    .digital-clock{
+      min-width: 520px;
+      padding: 26px 38px;
+      border-radius: 18px;
+      text-align: center;
+      font-weight: 800;
+      font-size: 110px;            /* MÁS GRANDE */
+      line-height: 1;
+      letter-spacing: 4px;
+
+      color: rgba(255,255,255,0.95);
+      background: radial-gradient(circle at 50% 40%, rgba(255,255,255,0.10), rgba(0,0,0,0.35));
+      border: 2px solid rgba(255,255,255,0.22);
+      box-shadow: 0 18px 45px rgba(0,0,0,0.45);
+      backdrop-filter: blur(8px);
+      user-select: none;
+    }
+
+    /* Responsive */
+    @media (max-width: 1200px){
+      .right{ flex-basis: 340px; max-width: 340px; }
+      .left{ flex-basis: 380px; max-width: 380px; }
+      .digital-clock{ min-width: 420px; font-size: 86px; padding: 22px 30px; }
+    }
+
+    @media (max-width: 900px){
+      .page{
+        flex-direction: column;
+        justify-content: center;
+      }
+      .left, .right{ max-width: 520px; }
+      .right{ justify-content: center; }
+      .digital-clock{ min-width: 360px; font-size: 74px; }
+    }
+
+    @media (max-width: 420px){
+      .digital-clock{ min-width: 300px; font-size: 58px; padding: 18px 22px; }
+    }
   </style>
 </head>
 <body>
 
-  <div class="form-container">
-    <h2>Formulario de Auxiliares</h2>
-    <form id="auxiliaryForm">
-      <label for="auxiliary">Selecciona el tipo de auxilio:</label>
-      <select id="auxiliary" required>
-        <option value="Baño">Baño</option>
-        <option value="Capacitación">Capacitación</option>
-        <option value="Retorno de Baño">Retorno de Baño</option>
-        <option value="Almuerzo">Almuerzo</option>
-        <option value="Retorno de Almuerzo">Retorno de Almuerzo</option>
-        <option value="Permiso">Permiso</option>
-      </select>
+  <div class="page">
+    <!-- IZQUIERDA: FORM -->
+    <div class="left">
+      <div class="form-container">
+        <h2>Formulario de Auxiliares</h2>
 
-      <label for="advisor">Selecciona el asesor:</label>
-<select id="advisor" required>
-  <option value="Melissa Merlhy Molina Rojas">Melissa Merlhy Molina Rojas</option>
-  <option value="Eveline Sandoval Ramos">Eveline Sandoval Ramos</option>
-  <option value="Diego Valle Ortiz">Diego Valle Ortiz</option>
-  <option value="Ashly Karolin Susanna Aviles Ysla">Ashly Karolin Susanna Aviles Ysla</option>
-  <option value="Sandra Manuela Vargas Leon">Sandra Manuela Vargas Leon</option>
-  <option value="Ashly Aviles Ysla">Ashly Aviles Ysla</option>
-  <option value="Karen Tatiana Zelada Saldaña">Karen Tatiana Zelada Saldaña</option>
-  <option value="Diego Valle Ortiz">Diego Valle Ortiz</option>
-  <option value="Ingrid Angie Sanchez Lopez">Ingrid Angie Sanchez Lopez</option>
-  <option value="Evelyn Melissa Calla Ruiz">Evelyn Melissa Calla Ruiz</option>
-  <option value="Josselyn Buitron Ramos">Josselyn Buitron Ramos</option>
-  <option value="Maria Lissette Prado Delgado">Maria Lissette Prado Delgado</option>
-  <option value="Yennifer Nolasco Rodas">Yennifer Nolasco Rodas</option>
-  <option value="Diana Maritza Guevara Pomasunco">Diana Maritza Guevara Pomasunco</option>
-  <option value="Diana Carolina Santos Loayza">Diana Carolina Santos Loayza</option>
-  <option value="Nelson Erick Montenegro Lopez">Nelson Erick Montenegro Lopez</option>
-  <option value="Cristhian Claudio Montes Vizcardo">Cristhian Claudio Montes Vizcardo</option>
-  <option value="Florcielo Guzman">Florcielo Guzman</option>
-  <option value="Tatiana Daniela Oliva Huamani">Tatiana Daniela Oliva Huamani</option>
-</select>
-      <label for="channel">Selecciona el canal:</label>
-      <select id="channel" required>
-        <option value="CCVOX">CCVOX</option>
-        <option value="PCHAT">PCHAT</option>
-        <option value="CORREO">CORREO</option>
-      </select>
+        <form id="auxiliaryForm">
+          <label for="auxiliary">Selecciona el tipo de auxilio:</label>
+          <select id="auxiliary" required>
+            <option value="Baño">Baño</option>
+            <option value="Capacitación">Capacitación</option>
+            <option value="Retorno de Baño">Retorno de Baño</option>
+            <option value="Almuerzo">Almuerzo</option>
+            <option value="Retorno de Almuerzo">Retorno de Almuerzo</option>
+            <option value="Permiso">Permiso</option>
+          </select>
 
-      <button type="button" id="submitBtn" onclick="submitForm()">Enviar</button>
+          <label for="advisor">Selecciona el asesor:</label>
+          <select id="advisor" required>
+            <option value="Melissa Merlhy Molina Rojas">Melissa Merlhy Molina Rojas</option>
+            <option value="Eveline Sandoval Ramos">Eveline Sandoval Ramos</option>
+            <option value="Diego Valle Ortiz">Diego Valle Ortiz</option>
+            <option value="Ashly Karolin Susanna Aviles Ysla">Ashly Karolin Susanna Aviles Ysla</option>
+            <option value="Sandra Manuela Vargas Leon">Sandra Manuela Vargas Leon</option>
+            <option value="Ashly Aviles Ysla">Ashly Aviles Ysla</option>
+            <option value="Karen Tatiana Zelada Saldaña">Karen Tatiana Zelada Saldaña</option>
+            <option value="Ingrid Angie Sanchez Lopez">Ingrid Angie Sanchez Lopez</option>
+            <option value="Evelyn Melissa Calla Ruiz">Evelyn Melissa Calla Ruiz</option>
+            <option value="Josselyn Buitron Ramos">Josselyn Buitron Ramos</option>
+            <option value="Maria Lissette Prado Delgado">Maria Lissette Prado Delgado</option>
+            <option value="Yennifer Nolasco Rodas">Yennifer Nolasco Rodas</option>
+            <option value="Diana Maritza Guevara Pomasunco">Diana Maritza Guevara Pomasunco</option>
+            <option value="Diana Carolina Santos Loayza">Diana Carolina Santos Loayza</option>
+            <option value="Nelson Erick Montenegro Lopez">Nelson Erick Montenegro Lopez</option>
+            <option value="Cristhian Claudio Montes Vizcardo">Cristhian Claudio Montes Vizcardo</option>
+            <option value="Florcielo Guzman">Florcielo Guzman</option>
+            <option value="Tatiana Daniela Oliva Huamani">Tatiana Daniela Oliva Huamani</option>
+          </select>
 
-      <div class="message" id="message">Registro guardado correctamente.</div>
-      <div class="error-message" id="errorMessage">Error al guardar.</div>
-    </form>
+          <label for="channel">Selecciona el canal:</label>
+          <select id="channel" required>
+            <option value="CCVOX">CCVOX</option>
+            <option value="PCHAT">PCHAT</option>
+            <option value="CORREO">CORREO</option>
+          </select>
+
+          <button type="button" id="submitBtn" onclick="submitForm()">Enviar</button>
+
+          <div class="message" id="message">Registro guardado correctamente.</div>
+          <div class="error-message" id="errorMessage">Error al guardar.</div>
+        </form>
+      </div>
+    </div>
+
+    <!-- CENTRO: RELOJ DIGITAL GRANDE -->
+    <div class="center">
+      <div class="digital-clock" id="clock" aria-label="Reloj digital">00:00:00</div>
+    </div>
+
+    <!-- DERECHA: IMAGEN -->
+    <div class="right">
+      <img
+        src="https://fv5-5.files.fm/thumb_show.php?i=zhtgjzbw96&view&v=1&PHPSESSID=00656fce39f46255b98508bdf4120c56e96d14b9"
+        alt="Imagen lateral derecha"
+      />
+    </div>
   </div>
 
-  <div class="clock" id="clock"></div>
-
   <script>
-    // URL DE TU APP SCRIPT (¡Asegúrate que sea la de la NUEVA implementación!)
     const scriptURL = 'https://script.google.com/macros/s/AKfycbzEJ0ELA8G24oErdcWqdAk0myJUox8_SaHkxKci5pUJz7oI2EJFd0-k8yYuElNHDHVw/exec';
 
     function submitForm() {
-      // 1. Obtener elementos y bloquear botón para evitar doble clic
       const btn = document.getElementById('submitBtn');
       const msgSuccess = document.getElementById('message');
       const msgError = document.getElementById('errorMessage');
-      
+
       btn.disabled = true;
       btn.textContent = "Enviando...";
       msgSuccess.style.display = 'none';
       msgError.style.display = 'none';
 
-      // 2. Preparar datos
       const formData = {
         auxiliary: document.getElementById('auxiliary').value,
         advisor: document.getElementById('advisor').value,
@@ -95,24 +266,17 @@
         timestamp: new Date().toLocaleString()
       };
 
-      // 3. Enviar usando FETCH (Más moderno y seguro que jQuery)
       fetch(scriptURL, {
         method: 'POST',
-        // IMPORTANTE: Enviar como string y usar text/plain para evitar bloqueo CORS
         body: JSON.stringify(formData),
-        headers: {
-            "Content-Type": "text/plain;charset=utf-8",
-        },
+        headers: { "Content-Type": "text/plain;charset=utf-8" }
       })
       .then((response) => {
-          if (response.ok) {
-              // Registro exitoso
-              msgSuccess.style.display = 'block';
-              // Reiniciar formulario (opcional)
-              // document.getElementById('auxiliaryForm').reset(); 
-          } else {
-              throw new Error('Error en la respuesta del servidor');
-          }
+        if (response.ok) {
+          msgSuccess.style.display = 'block';
+        } else {
+          throw new Error('Error en la respuesta del servidor');
+        }
       })
       .catch((error) => {
         console.error('Error!', error);
@@ -120,26 +284,23 @@
         msgError.innerText = "Error: " + error.message;
       })
       .finally(() => {
-        // Restaurar el botón
         btn.disabled = false;
         btn.textContent = "Enviar";
-        
-        // Ocultar mensaje de éxito tras 5 segundos
-        if(msgSuccess.style.display === 'block'){
-            setTimeout(() => { msgSuccess.style.display = 'none'; }, 5000);
+        if (msgSuccess.style.display === 'block') {
+          setTimeout(() => { msgSuccess.style.display = 'none'; }, 5000);
         }
       });
     }
 
-    // Función del reloj
-    function updateClock() {
+    function updateClock(){
       const now = new Date();
-      const timeString = now.toLocaleTimeString('es-ES', { hour12: false });
-      document.getElementById('clock').textContent = timeString;
+      const hh = String(now.getHours()).padStart(2,'0');
+      const mm = String(now.getMinutes()).padStart(2,'0');
+      const ss = String(now.getSeconds()).padStart(2,'0');
+      document.getElementById('clock').textContent = `${hh}:${mm}:${ss}`;
     }
-
     setInterval(updateClock, 1000);
-    updateClock(); 
+    updateClock();
   </script>
 </body>
 </html>
